@@ -1,0 +1,31 @@
+#### mapflowcell for lane  1, run154_1
+
+#!/bin/bash
+
+#### These section contains the parameters used to submit this script/job in the department cluster 
+#$ -pe parallel 4
+#$ -R y
+###reserving the memory specified
+#$ -l h_vmem=5G
+#$ -cwd
+#$ -V
+#$ -m beas
+
+
+#### These section is for assigning variables to the paths and programs that will be needed for running the script below
+REF=/ebio/abt6_projects6/backup/data/Genomes/Plants/ATH/TAIR9_Masked/TAIR9_masked.fa.shore
+TEMP=/ebio/abt6_projects8/ACD6_suppressors/tmp
+SHORE=/ebio/abt6_projects8/solexa_tools/shore
+DATA=/ebio/abt6_projects8/ACD6_suppressors/data/run154_lane1-8/run154_1/1
+ID=$1
+
+for i in 1 2
+do
+for k in 01 02 03 04 05 06 07 08 09 10 11 12
+do
+
+#### This is the actual script that is run for mapping the reads to the TAIR9 Col-0 reference sequence of each sample
+$SHORE/startshore.sh -T $TEMP mapfl -f $DATA/sample_P$i$ID$k/single -i $REF -v bwa -n 5% -g 5% -e 5% --rplot -c 4
+
+done
+done
