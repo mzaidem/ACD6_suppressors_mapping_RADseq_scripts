@@ -1,0 +1,21 @@
+### this script was submitted with the qsub command into the department cluster
+
+#!/bin/bash
+
+#### Parameters used for submitting the job in the cluster queue
+#$ -R y
+###reserving the memory specified
+#$ -l h_vmem=20G
+#$ -cwd
+#$ -V
+#$ -m beas
+
+####assigning variables to paths where the files and programs that would be needed are located
+WD=/ebio/abt6_projects8/ACD6_suppressors/data/run154_lane1-8
+QSEQFOLDER=/ebio/abt6_ga2/images/130529_SN7001143_0154_BC25BDACXX/Data/Intensities/QSEQ
+SHORE=/ebio/abt6_projects8/solexa_tools/shore
+TEMP=/ebio/abt6_projects8/ACD6_suppressors/tmp
+BARCODE=/ebio/abt6_projects8/ACD6_suppressors/data/RADindex_PstI192_SR.txt
+
+####actual command to source when the bash script is run
+$SHORE/startshore.sh -T $TEMP import -b $QSEQFOLDER -l 1 -o $WD/run154_1 --rplot -c -g -n 10% -r $BARCODE -h 2 -k30 -a genomic 
