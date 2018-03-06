@@ -1,0 +1,31 @@
+#!/bin/bash
+
+#### these are the parameters used for submitting the job to the department cluster
+#$ -R y
+###reserving the memory specified
+#$ -l h_vmem=10G
+###requirement for the memory
+#$ -cwd
+###current working directory
+#$ -v GENOMEMAPPER=/ebio/abt6_projects8/solexa_tools/genomemapper
+###exporting environmental variables
+#$ -v LINUX_GSLPATH=/ebio/abt6_projects8/solexa_tools/gsl-0.12
+#$ -m beas
+###sending email updates
+
+#### These section is for creating variables linked to some files and paths to programs needed for the script
+SHORE=/ebio/abt6_projects8/solexa_tools/shore
+#REF=/ebio/abt6_projects6/backup/data/Genomes/Plants/ATH/TAIR9_Masked/TAIR9_masked.fa.shore
+TEMP=/ebio/abt6_projects8/ACD6_suppressors/tmp
+SCOREMATRIX1=/ebio/abt6_projects8/solexa_tools/shore/share/shore/scoring_matrix_hom.txt
+SCOREMATRIX2=/ebio/abt6/sangtae/scoringmatrix.RAD.homo.txt
+MAPLIST=/ebio/abt6_projects8/ACD6_suppressors/data/run151_lane2_3_4/run151_2/2
+
+#### This indicates that 3 variables are needed to be inputed when submitting the shell script with the qsub command
+IDA=$1
+IDB=$2
+IDC=$3
+
+#### This is the actual script for generating the consensus sequence
+REF=$(q-src "/ebio/abt6_projects6/backup/data/Genomes/Plants/ATH/TAIR9_Masked") || exit 1
+$SHORE/startshore.sh -T $TEMP consensus -n sample_P"$IDA""$IDB""$IDC" -f $REF/TAIR9_masked.fa.shore -m "$MAPLIST"/sample_P"$IDA""$IDB""$IDC"/single -h 10 -a $SCOREMATRIX1 -r -v -N -o "$MAPLIST"/sample_P"$IDA""$IDB""$IDC"/Analysis
