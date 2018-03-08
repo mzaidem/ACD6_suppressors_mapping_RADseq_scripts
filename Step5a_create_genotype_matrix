@@ -1,0 +1,71 @@
+##### This is the first step in generating the genotype matrix file for a given population for use in QTL mapping
+##### This uses files generated from the previous step (Step4_process_QVQR_SNPs)
+
+#!/bin/bash
+
+##### These are the parameters used in the job submission in the department cluster
+#####$ -R y
+#####reserving the memory specified
+#####$ -l h_vmem=5G
+#####requirement for the memory
+#####$ -cwd
+###current working directory
+#####$ -m beas
+###sending email updates
+
+#### This is an example script used for mapping the Br-0 x Est-1 F2 population (run151_lane2 and lane3)
+
+#### Assign variables to paths that are going to be used in the script
+##### where all the samples are
+WD=/ebio/abt6_projects8/ACD6_suppressors/data/old_run151
+##### sample directory
+LANE2=/ebio/abt6_projects8/ACD6_suppressors/data/old_run151/run151_2/2
+LANE3=/ebio/abt6_projects8/ACD6_suppressors/data/old_run151/run151_3/3
+##### where all the genotype info from the samples
+GTDIR=/ebio/abt6_projects8/ACD6_suppressors/data/old_run151/GTDIR_Br0xEst-1/BrxEF2
+PARENT=/ebio/abt6_projects8/ACD6_suppressors/data/MARKERFULL/COMMON_Est.Br-0/Br-0.Est-1.var.txt
+
+#### Below is the script proper and will generate the SNP genotype at each marker position for each individual F2 used in the mapping population 
+################
+#### run151_LANE2 #####
+################
+for pt in 1 2
+do
+for rn in A B C D E F G H
+do
+for cn in 01 02 03 04 05 06 07 08 09 10 11 12
+do
+
+awk 'FNR==NR{a[$1]; next} ($1 in a)' $GTDIR/Br-0xEst.var.pos.frm-RADseq.blank.txt $GTDIR/run151_2_P$pt$rn$cn.qvqr > $GTDIR/GTwithPARENT/run151_2_P$pt$rn$cn.qvqr.info.common
+
+awk 'FNR==NR{a[$1]; next} (!($1 in a))' $GTDIR/GTwithPARENT/run151_2_P$pt$rn$cn.qvqr.info.common $GTDIR/Br-0xEst.var.pos.frm-RADseq.blank.txt >  $GTDIR/GTwithPARENT/run151_2_P$pt$rn$cn.qvqr.info.blank
+
+cat $GTDIR/GTwithPARENT/run151_2_P$pt$rn$cn.qvqr.info.common $GTDIR/GTwithPARENT/run151_2_P$pt$rn$cn.qvqr.info.blank | sort -g -k1 > $GTDIR/GTwithPARENT/run151_2_P$pt$rn$cn.qvqr.info.full
+
+paste $GTDIR/Br-0xEst.var.pos.frm-RADseq.txt $GTDIR/GTwithPARENT/run151_2_P$pt$rn$cn.qvqr.info.full > $GTDIR/GTwithPARENT/run151_2_P$pt$rn$cn.qvqr.info.full.withparent
+
+done
+done
+done
+
+################
+#### run151_LANE3 #####
+################
+for pt in 1 
+do
+for rn in A B C D E F G H
+do
+for cn in 01 02 03 04 05 06 07 08 09 10 11 12
+do
+
+awk 'FNR==NR{a[$1]; next} ($1 in a)' $GTDIR/Br-0xEst.var.pos.frm-RADseq.blank.txt $GTDIR/run151_3_P$pt$rn$cn.qvqr > $GTDIR/GTwithPARENT/run151_3_P$pt$rn$cn.qvqr.info.common
+
+awk 'FNR==NR{a[$1]; next} (!($1 in a))'$GTDIR/GTwithPARENT/run151_3_P$pt$rn$cn.qvqr.info.common $GTDIR/Br-0xEst.var.pos.frm-RADseq.blank.txt >  $GTDIR/GTwithPARENT/run151_3_P$pt$rn$cn.qvqr.info.blank
+
+cat $GTDIR/GTwithPARENT/run151_3_P$pt$rn$cn.qvqr.info.common $GTDIR/GTwithPARENT/run151_3_P$pt$rn$cn.qvqr.info.blank | sort -g -k1 > $GTDIR/GTwithPARENT/run151_3_P$pt$rn$cn.qvqr.info.full
+
+paste $GTDIR/Br-0xEst.var.pos.frm-RADseq.txt $GTDIR/GTwithPARENT/run151_3_P$pt$rn$cn.qvqr.info.full > $GTDIR/GTwithPARENT/run151_3_P$pt$rn$cn.qvqr.info.full.withparent
+
+done
+done
+done
