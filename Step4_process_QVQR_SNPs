@@ -1,3 +1,6 @@
+##### These whole script prepares all filtered SNP calls from SNP calls after alignment. 
+##### This also prepares files that would be the basis of making the genotype matrix for the QTL mapping
+
 #!/bin/bash
 
 #### These are the parameters used for submitting the script to the department cluster queue
@@ -12,15 +15,19 @@
 
 
 ######################################
-# Pro-0 x Est-1 mapping (run154_lane1)
+# Br-0 x Est-1 mapping (run151_lane2 and lane3)
 ######################################
 
 ##### where all the samples are
-WD=/ebio/abt6_projects8/ACD6_suppressors/data/run154_lane1-8
+WD=/ebio/abt6_projects8/ACD6_suppressors/data/old_run151
 
 ##### sample directory
-LANE1=/ebio/abt6_projects8/ACD6_suppressors/data/run154_lane1-8/run154_1/1
+LANE2=/ebio/abt6_projects8/ACD6_suppressors/data/old_run151/run151_2/2
+LANE3=/ebio/abt6_projects8/ACD6_suppressors/data/old_run151/run151_3/3
 
+##### where all the genotype info from the samples
+GTDIR=/ebio/abt6_projects8/ACD6_suppressors/data/old_run151/GTDIR_Br0xEst-1/BrxEF2
+PARENT=/ebio/abt6_projects8/ACD6_suppressors/data/MARKERFULL/COMMON_Est.Br-0/Br-0.Est-1.var.txt
 
 #################################################################################################################
 ## 1) Remove the 1st column for chromosome number, and incorporate it with the POS column
@@ -35,7 +42,7 @@ LANE1=/ebio/abt6_projects8/ACD6_suppressors/data/run154_lane1-8/run154_1/1
 #################################################################################################################
 
 ###################
-##### run154_LANE1 #######
+##### run151_LANE2 #######
 ###################
 
 for pt in 1 2
@@ -45,17 +52,61 @@ do
 for cn in 01 02 03 04 05 06 07 08 09 10 11 12
 do
 
-awk '{if ($2<6 && $5!="-" && $9==1) print $2*100000000+$3"\t"$4"\t"$5"\t"$6"\t"$7"\t"$8"\t"$9}' $LANE1/sample_P$pt$rn$cn/Analysis/ConsensusAnalysis/quality_variant.txt > $LANE1/run154_1_P$pt$rn$cn.qv
+awk '{if ($2<6 && $5!="-" && $9==1) print $2*100000000+$3"\t"$4"\t"$5"\t"$6"\t"$7"\t"$8"\t"$9}' $LANE2/sample_P$pt$rn$cn/Analysis/ConsensusAnalysis/quality_variant.txt > $LANE2/run151_2_P$pt$rn$cn.qv
 
 ### only to use for non unxz files ####
-unxz $LANE1/sample_P$pt$rn$cn/Analysis/ConsensusAnalysis/quality_reference.txt.xz 
+### unxz $LANE1/sample_P$pt$rn$cn/Analysis/ConsensusAnalysis/quality_reference.txt.xz 
 
-awk '{if ($2<6 && $6>24) print $2*100000000+$3"\t"$4"\t"$5"\t"$6"\t"$7"\t"$8"\t"$9}' $LANE1/sample_P$pt$rn$cn/Analysis/ConsensusAnalysis/quality_reference.txt > $LANE1/run154_1_P$pt$rn$cn.qr
+awk '{if ($2<6 && $6>24) print $2*100000000+$3"\t"$4"\t"$5"\t"$6"\t"$7"\t"$8"\t"$9}' $LANE2/sample_P$pt$rn$cn/Analysis/ConsensusAnalysis/quality_reference.txt > $LANE2/run151_2_P$pt$rn$cn.qr
 
-awk 'FNR==NR{a[$1];next} (!($1 in a))' $LANE1/run154_1_P$pt$rn$cn.qv $LANE1/run154_1_P$pt$rn$cn.qr > $LANE1/run154_1_P$pt$rn$cn.qr_only
 
-cat $LANE1/run154_1_P$pt$rn$cn.qv $LANE1/run154_1_P$pt$rn$cn.qr_only | sort -g -k1 > $GTDIR/run154_1_P$pt$rn$cn.qvqr
+awk 'FNR==NR{a[$1];next} (!($1 in a))' $LANE2/run151_2_P$pt$rn$cn.qv $LANE2/run151_2_P$pt$rn$cn.qr > $LANE2/run151_2_P$pt$rn$cn.qr_only
+
+cat $LANE2/run151_2_P$pt$rn$cn.qv $LANE2/run151_2_P$pt$rn$cn.qr_only | sort -g -k1 > $GTDIR/run151_2_P$pt$rn$cn.qvqr
 
 done
 done
 done
+
+###################
+##### run151_LANE3 #######
+###################
+
+for pt in 1
+do
+for rn in A B C D E F G H
+do
+for cn in 01 02 03 04 05 06 07 08 09 10 11 12
+do
+
+awk '{if ($2<6 && $5!="-" && $9==1) print $2*100000000+$3"\t"$4"\t"$5"\t"$6"\t"$7"\t"$8"\t"$9}' $LANE3/sample_P$pt$rn$cn/Analysis/ConsensusAnalysis/quality_variant.txt > $LANE3/run151_3_P$pt$rn$cn.qv
+
+### only to use for non unxz files ####
+### unxz $LANE1/sample_P$pt$rn$cn/Analysis/ConsensusAnalysis/quality_reference.txt.xz 
+
+awk '{if ($2<6 && $6>24) print $2*100000000+$3"\t"$4"\t"$5"\t"$6"\t"$7"\t"$8"\t"$9}' $LANE3/sample_P$pt$rn$cn/Analysis/ConsensusAnalysis/quality_reference.txt > $LANE3/run151_3_P$pt$rn$cn.qr
+
+awk 'FNR==NR{a[$1];next} (!($1 in a))' $LANE3/run151_3_P$pt$rn$cn.qv $LANE3/run151_3_P$pt$rn$cn.qr > $LANE3/run151_3_P$pt$rn$cn.qr_only
+
+cat $LANE3/run151_3_P$pt$rn$cn.qv $LANE3/run151_3_P$pt$rn$cn.qr_only | sort -g -k1 > $GTDIR/run151_3_P$pt$rn$cn.qvqr
+
+done
+done
+done
+
+
+##### This part of the script gives the list of all possible marker positions found in the sequenced F2 population
+#####################################################################################################
+## 1) merge all possible marker positions, by merging all the SNP files of all individuals together
+## 2) Take only the the columns 1,2,3 = Chr + Pos, Reference SNP, Alternate SNP
+## 3) Sort the file numerically based on Column 1 and remove duplicate positions 
+#####################################################################################################
+
+cat $GTDIR/run151_*.qvqr | awk '{print $1, $2, $3}' |sort -g -k1 | uniq > $GTDIR/BrxEF2.marker.all.list
+
+
+
+
+
+
+
