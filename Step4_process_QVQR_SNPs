@@ -104,6 +104,19 @@ done
 
 cat $GTDIR/run151_*.qvqr | awk '{print $1, $2, $3}' |sort -g -k1 | uniq > $GTDIR/BrxEF2.marker.all.list
 
+######################################################################################################
+## A) to preparing blank files and list of possible markers
+##		In the instance that we have the resequenced parents SNPs: 
+##		B) compare the merged file for all possible position from the resequenced parents list and keep only the positions present in both
+#######################################################################################################
+
+awk 'FNR==NR{a[$1];next} ($1 in a)' $GTDIR/BrxEF2.marker.all.list $PARENT > $GTDIR/Br-0xEst.var.pos.frm-RADseq.txt
+
+awk '{print $1"\t"$2"\t""N""\t""Q""\t""S""\t""D""\t""P"}' $GTDIR/Br-0xEst.var.pos.frm-RADseq.txt > $GTDIR/Br-0xEst.var.pos.frm-RADseq.blank.txt
+
+awk '{print $1}' $GTDIR/Br-0xEst.var.pos.frm-RADseq.blank.txt > $GTDIR/Br-0xEst.var.pos_re-seq.marker.list
+
+
 
 
 
