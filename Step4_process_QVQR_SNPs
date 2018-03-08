@@ -21,12 +21,6 @@ WD=/ebio/abt6_projects8/ACD6_suppressors/data/run154_lane1-8
 ##### sample directory
 LANE1=/ebio/abt6_projects8/ACD6_suppressors/data/run154_lane1-8/run154_1/1
 
-for pt in 1 2
-do
-for rn in A B C D E F G H
-do
-for cn in 01 02 03 04 05 06 07 08 09 10 11 12
-do
 
 #################################################################################################################
 ## 1) Remove the 1st column for chromosome number, and incorporate it with the POS column
@@ -43,6 +37,13 @@ do
 ###################
 ##### run154_LANE1 #######
 ###################
+
+for pt in 1 2
+do
+for rn in A B C D E F G H
+do
+for cn in 01 02 03 04 05 06 07 08 09 10 11 12
+do
 
 awk '{if ($2<6 && $5!="-" && $9==1) print $2*100000000+$3"\t"$4"\t"$5"\t"$6"\t"$7"\t"$8"\t"$9}' $LANE1/sample_P$pt$rn$cn/Analysis/ConsensusAnalysis/quality_variant.txt > $LANE1/run154_1_P$pt$rn$cn.qv
 
