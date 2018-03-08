@@ -1,0 +1,82 @@
+##### This is the second step in generating the genotype matrix file for a given population for use in QTL mapping
+##### This uses files generated from the previous step (Step5a_create_genotype_matrix)
+
+#!/bin/bash
+
+#### These are the parameters used for submitting the script to the department cluster queue
+#####$ -R y
+#####reserving the memory specified
+#####$ -l h_vmem=5G
+#####requirement for the memory
+#####$ -cwd
+###current working directory
+#####$ -m beas
+###sending email updates
+
+
+#### Assign variables to paths that are going to be used in the script
+##### where all the samples are
+WD=/ebio/abt6_projects8/ACD6_suppressors/data/old_run151
+##### sample directory
+LANE2=/ebio/abt6_projects8/ACD6_suppressors/data/old_run151/run151_2/2
+LANE3=/ebio/abt6_projects8/ACD6_suppressors/data/old_run151/run151_3/3
+##### where all the genotype info from the samples
+GTDIR=/ebio/abt6_projects8/ACD6_suppressors/data/old_run151/GTDIR_Br0xEst-1/BrxEF2
+OUTPUT=/ebio/abt6_projects8/ACD6_suppressors/data/run154_lane1-8/GTDIR_ProxEst-1/PxEF2_OUTPUT_CSV
+
+###########################################
+# make flag for parental genotyping in F2
+###########################################
+
+#### $10 is concordance $9 is support. If $3==$7 and the Q score is >24 it's A Pro-0.If $4==$7 and the Q score is >24 it's B Est-1
+
+#### lane2 #### 
+for pt in 1 2
+do
+for rn in A B C D E F G H
+do
+for cn in 01 02 03 04 05 06 07 08 09 10 11 12
+do
+
+awk '{if ($10>=0.3 && $10<=0.7 && $9>=3) print "H"; else if ($3==$7 && $8>24) print "A";else if ($4==$7 && $8>24) print "B"; else print "NA"}' $GTDIR/GTwithPARENT/run151_2_P$pt$rn$cn.qvqr.info.full.withparent > $GTDIR/GTwithPARENT/GT_flagged/run151_2_P$pt$rn$cn.gtflagged
+echo -n "lane2_P"$pt$rn$cn"," >> $GTDIR/GTwithPARENT/GT_flagged/lane2_BrxEF2.marker.head
+
+done
+done
+done
+
+
+#### lane3 #### 
+for pt in 1 
+do
+for rn in A B C D E F G H
+do
+for cn in 01 02 03 04 05 06 07 08 09 10 11 12
+do
+
+awk '{if ($10>=0.3 && $10<=0.7 && $9>=3) print "H"; else if ($3==$7 && $8>24) print "A";else if ($4==$7 && $8>24) print "B"; else print "NA"}' $GTDIR/GTwithPARENT/run151_3_P$pt$rn$cn.qvqr.info.full.withparent > $GTDIR/GTwithPARENT/GT_flagged/run151_3_P$pt$rn$cn.gtflagged
+echo -n "lane3_P"$pt$rn$cn"," >> $GTDIR/GTwithPARENT/GT_flagged/lane3_BrxEF2.marker.head
+
+done
+done
+done
+
+
+##################################
+##### to make the genotype matrix #####
+##################################
+
+###lane2
+sed 's/lane2_P1A01/Chrpos,lane2_P1A01/g' $GTDIR/GTwithPARENT/GT_flagged/lane2_BrxEF2.marker.head > $GTDIR/lane2_BrxEF2.marker.head.temp
+sed 's/lane2_P2H12,/lane2_P2H12/g' $GTDIR/lane2_BrxEF2.marker.head.temp > $GTDIR/lane2_BrxEF2.marker.head.csv
+
+paste -d "," $GTDIR/Br-0xEst.var.pos_re-seq.marker.list  $GTDIR/GTwithPARENT/GT_flagged/run151_2_P$pt$rn$cn.gtflagged > $OUTPUT/lane2_Br-0xEF2.gt.ver1.csv
+cat $GTDIR/lane3_BrxEF2.marker.head.csv $OUTPUT/lane2_Br-0xEF2.gt.ver1.csv > $OUTPUT/lane2_BrxEF2.gt-with-head.csv
+
+
+###lane3
+sed 's/lane2_P1A01/Chrpos,lane2_P1A01/g' $GTDIR/GTwithPARENT/GT_flagged/lane3_BrxEF2.marker.head > $GTDIR/lane3_BrxEF2.marker.head.temp
+sed 's/lane2_P2H12,/lane2_P2H12/g' $GTDIR/lane3_BrxEF2.marker.head.temp > $GTDIR/lane3_BrxEF2.marker.head.csv
+
+paste -d "," $GTDIR/Br-0xEst.var.pos_re-seq.marker.list  $GTDIR/GTwithPARENT/GT_flagged/run151_3_P$pt$rn$cn.gtflagged > $OUTPUT/lane3_Br-0xEF2.gt.ver1.csv
+cat $GTDIR/lane3_BrxEF2.marker.head.csv $OUTPUT/lane3_Br-0xEF2.gt.ver1.csv > $OUTPUT/lane3_BrxEF2.gt-with-head.csv
